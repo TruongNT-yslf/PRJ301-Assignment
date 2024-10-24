@@ -5,27 +5,32 @@
 
 package entity;
 
+import entity.accesscontrol.Role;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
  */
 public class Employee {
-    private int employeeID;
+    private int id;
     private String employeeName;
     private boolean gender;
     private String address;
     private java.sql.Date dob;
-    private int roleID;
+    private Role role;
     private Department department;
     private double salary;
-    
+    private ArrayList<SchedualEmployee> schedualEmployees = new ArrayList<>();
 
-    public int getEmployeeID() {
-        return employeeID;
+    public int getId() {
+        return id;
     }
 
-    public void setEmployeeID(int employeeID) {
-        this.employeeID = employeeID;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getEmployeeName() {
@@ -52,20 +57,20 @@ public class Employee {
         this.address = address;
     }
 
-    public java.sql.Date getDob() {
+    public Date getDob() {
         return dob;
     }
 
-    public void setDob(java.sql.Date dob) {
+    public void setDob(Date dob) {
         this.dob = dob;
     }
 
-    public int getRoleID() {
-        return roleID;
+    public Role getRole() {
+        return role;
     }
 
-    public void setRoleID(int roleID) {
-        this.roleID = roleID;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public Department getDepartment() {
@@ -83,4 +88,15 @@ public class Employee {
     public void setSalary(double salary) {
         this.salary = salary;
     }
+
+    public ArrayList<SchedualEmployee> getSchedualEmployees() {
+        return schedualEmployees;
+    }
+
+    public void setSchedualEmployees(ArrayList<SchedualEmployee> schedualEmployees) {
+        this.schedualEmployees = schedualEmployees;
+    }
+
+    
+
 }

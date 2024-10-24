@@ -16,15 +16,7 @@ public class Plan {
     private Date start;
     private Date end;
     private Department dept;
-    private ArrayList<PlanCampaign> campains = new ArrayList<>();
-
-    public ArrayList<PlanCampaign> getCampains() {
-        return campains;
-    }
-
-    public void setCampains(ArrayList<PlanCampaign> campains) {
-        this.campains = campains;
-    }
+    private ArrayList<PlanCampaign> campaigns = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -65,5 +57,15 @@ public class Plan {
     public void setDept(Department dept) {
         this.dept = dept;
     }
+
+    public ArrayList<PlanCampaign> getCampaigns() {
+        return campaigns;
+    }
+
+    public void setCampaigns(ArrayList<PlanCampaign> campaigns) {
+        this.campaigns = campaigns;
+    }
+
+    
     
 }

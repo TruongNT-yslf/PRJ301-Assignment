@@ -4,7 +4,8 @@
  */
 package entity;
 
-import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  *
@@ -15,15 +16,7 @@ public class Department {
     private int id;
     private String name;
     private String type;
-    private List<Employee> employees;
-
-    public List<Employee> getEmployees() {
-        return employees;
-    }
-
-    public void setEmployees(List<Employee> employees) {
-        this.employees = employees;
-    }
+    private ArrayList<Employee> employees = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -48,4 +41,14 @@ public class Department {
     public void setType(String type) {
         this.type = type;
     }
+
+    public ArrayList<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(ArrayList<Employee> employees) {
+        this.employees = employees;
+    }
+
+    
 }

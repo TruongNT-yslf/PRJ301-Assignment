@@ -10,17 +10,17 @@ package entity;
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
  */
 public class Attendance {
-    private int attendentID;
+    private int id;
     private int schEmpID;
     private double quantity;
     private double alpha;
 
-    public int getAttendentID() {
-        return attendentID;
+    public int getId() {
+        return id;
     }
 
-    public void setAttendentID(int attendentID) {
-        this.attendentID = attendentID;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getSchEmpID() {

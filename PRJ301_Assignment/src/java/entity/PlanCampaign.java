@@ -5,6 +5,8 @@
 
 package entity;
 
+import java.util.ArrayList;
+
 /**
  * 
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
@@ -15,6 +17,7 @@ public class PlanCampaign {
     private Product product;
     private int quantity;
     private float cost;
+    private ArrayList<SchedualCampaign> schedualCampaigns = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -55,5 +58,15 @@ public class PlanCampaign {
     public void setCost(float cost) {
         this.cost = cost;
     }
+
+    public ArrayList<SchedualCampaign> getSchedualCampaigns() {
+        return schedualCampaigns;
+    }
+
+    public void setSchedualCampaigns(ArrayList<SchedualCampaign> schedualCampaigns) {
+        this.schedualCampaigns = schedualCampaigns;
+    }
+
+
     
 }
