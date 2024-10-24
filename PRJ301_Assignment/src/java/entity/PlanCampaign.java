@@ -9,7 +9,7 @@ package entity;
  * 
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
  */
-public class PlanCampain {
+public class PlanCampaign {
     private int id;
     private Plan plan;
     private Product product;

@@ -9,7 +9,7 @@ import dao.PlanDBContext;
 import dao.ProductDBContext;
 import entity.Department;
 import entity.Plan;
-import entity.PlanCampain;
+import entity.PlanCampaign;
 import entity.Product;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -76,7 +76,7 @@ public class ProductionPlanCreateController extends HttpServlet {
 
         String[] pids = request.getParameterValues("pid");
         for (String pid : pids) {
-            PlanCampain c = new PlanCampain();
+            PlanCampaign c = new PlanCampaign();
 
             Product p = new Product();
             p.setId(Integer.parseInt(pid));

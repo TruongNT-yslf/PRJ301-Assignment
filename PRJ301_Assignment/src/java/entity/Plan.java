@@ -16,13 +16,13 @@ public class Plan {
     private Date start;
     private Date end;
     private Department dept;
-    private ArrayList<PlanCampain> campains = new ArrayList<>();
+    private ArrayList<PlanCampaign> campains = new ArrayList<>();
 
-    public ArrayList<PlanCampain> getCampains() {
+    public ArrayList<PlanCampaign> getCampains() {
         return campains;
     }
 
-    public void setCampains(ArrayList<PlanCampain> campains) {
+    public void setCampains(ArrayList<PlanCampaign> campains) {
         this.campains = campains;
     }
 
