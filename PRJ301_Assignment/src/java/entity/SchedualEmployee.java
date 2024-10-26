@@ -17,7 +17,7 @@ public class SchedualEmployee {
     private SchedualCampaign schedualCampaign; 
     private Employee employee;
     private double quantity;
-    private ArrayList<Attendance> attendances = new ArrayList<>(); 
+    private Attendance attendance; 
 
     public int getId() {
         return id;
@@ -27,7 +27,7 @@ public class SchedualEmployee {
         this.id = id;
     }
 
-    
+
 
     public SchedualCampaign getSchedualCampaign() {
         return schedualCampaign;
@@ -53,13 +53,15 @@ public class SchedualEmployee {
         this.quantity = quantity;
     }
 
-    public ArrayList<Attendance> getAttendances() {
-        return attendances;
+    public Attendance getAttendance() {
+        return attendance;
     }
 
-    public void setAttendances(ArrayList<Attendance> attendances) {
-        this.attendances = attendances;
+    public void setAttendance(Attendance attendance) {
+        this.attendance = attendance;
     }
+
+    
 
     
     

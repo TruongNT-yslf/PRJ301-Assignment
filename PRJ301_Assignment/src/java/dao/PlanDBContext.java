@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package dao;
+
+import entity.Attendance;
 import entity.Department;
 import entity.Employee;
 import entity.Plan;
@@ -20,18 +21,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 /**
- * 
+ *
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
  */
-public class PlanDBContext extends DBContext<Plan>{
+public class PlanDBContext extends DBContext<Plan> {
 
     @Override
     public void insert(Plan entity) {
-                try {
+        try {
             connection.setAutoCommit(false);
-            
-            
+
             String sql_insert_plan = "INSERT INTO [Plan]\n"
                     + "           ([PlanName]\n"
                     + "           ,[StartDate]\n"
@@ -48,15 +49,15 @@ public class PlanDBContext extends DBContext<Plan>{
             stm_insert_plan.setDate(3, entity.getEnd());
             stm_insert_plan.setInt(4, entity.getDept().getId());
             stm_insert_plan.executeUpdate();
-            
+
             String sql_select_plan = "SELECT @@IDENTITY as PlanID";
             PreparedStatement stm_select_plan = connection.prepareStatement(sql_select_plan);
             ResultSet rs = stm_select_plan.executeQuery();
             if (rs.next()) {
                 entity.setId(rs.getInt("PlanID"));
             }
-            
-            for (PlanCampaign campain : entity.getCampains()) {
+
+            for (PlanCampaign campain : entity.getCampaigns()) {
                 String sql_insert_campain = "INSERT INTO [PlanCampain]\n"
                         + "           ([PlanID]\n"
                         + "           ,[ProductID]\n"
@@ -67,7 +68,7 @@ public class PlanDBContext extends DBContext<Plan>{
                         + "           ,?\n"
                         + "           ,?\n"
                         + "           ,?)";
-                
+
                 PreparedStatement stm_insert_campain = connection.prepareStatement(sql_insert_campain);
                 stm_insert_campain.setInt(1, entity.getId());
                 stm_insert_campain.setInt(2, campain.getProduct().getId());
@@ -75,7 +76,7 @@ public class PlanDBContext extends DBContext<Plan>{
                 stm_insert_campain.setFloat(4, campain.getCost());
                 stm_insert_campain.executeUpdate();
             }
-            
+
             connection.commit();
         } catch (SQLException ex) {
             Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
@@ -110,108 +111,142 @@ public class PlanDBContext extends DBContext<Plan>{
 
     @Override
     public ArrayList<Plan> list() {
-        List<Plan> plans = new ArrayList<>();
+
+        String sql = """
+                 SELECT 
+                     p.PlanID, 
+                     p.PlanName, 
+                     p.StartDate, 
+                     p.EndDate, 
+                     pc.PlanCampaignID, 
+                     pc.Quantity AS PlanQuantity, 
+                     sc.ScID, 
+                     sc.[Date] AS SchedualDate, 
+                     sc.[Shift], 
+                     se.SchEmpID, 
+                     se.Quantity AS EmployeeQuantity, 
+                     a.AttendentID, 
+                     a.Quantity AS AttendanceQuantity 
+                 FROM 
+                     [Plan] p 
+                 JOIN 
+                     PlanCampaign pc ON p.PlanID = pc.PlanID 
+                 LEFT JOIN 
+                     SchedualCampaign sc ON pc.PlanCampaignID = sc.PlanCampaignID
+                 LEFT JOIN
+                     SchedualEmployee se ON sc.ScID = se.ScID 
+                 LEFT JOIN 
+                     Attendence a ON se.SchEmpID = a.SchEmpID
+                 ORDER BY 
+                     p.PlanID, 
+                     pc.PlanCampaignID, 
+                     sc.ScID, 
+                     se.SchEmpID;
+                 """;
+        PreparedStatement stm = null;
+        ArrayList<Plan> plans = new ArrayList<>();
         try {
-            // SQL với các JOIN để lấy tất cả thông tin cần thiết
-            String sql = "SELECT p.PlanID, p.PlanName, p.StartDate, p.EndDate, d.DepartmentID, d.DepartmentName, d.DepartmentType, "
-                       + "       pc.PlanCampainID, pc.Quantity AS PlanQuantity, pc.Estimate AS CostPerProduct, "
-                       + "       pr.ProductID, pr.ProductName, "
-                       + "       sc.SchedualCampainID, sc.WorkDate, sc.Shift, "
-                       + "       se.SchedualEmployeeID, se.Quantity AS AssignedQuantity, "
-                       + "       e.EmployeeID, e.EmployeeName, "
-                       + "       a.AttendanceID, a.QuantityProduced "
-                       + "FROM [Plan] p "
-                       + "INNER JOIN Department d ON p.DepartmentID = d.DepartmentID "
-                       + "INNER JOIN PlanCampain pc ON p.PlanID = pc.PlanID "
-                       + "INNER JOIN Product pr ON pc.ProductID = pr.ProductID "
-                       + "INNER JOIN SchedualCampain sc ON pc.PlanCampainID = sc.PlanCampainID "
-                       + "INNER JOIN SchedualEmployee se ON sc.SchedualCampainID = se.SchedualCampainID "
-                       + "INNER JOIN Employee e ON se.EmployeeID = e.EmployeeID "
-                       + "LEFT JOIN Attendance a ON se.SchedualEmployeeID = a.SchedualEmployeeID";
-            
-            PreparedStatement stm = connection.prepareStatement(sql);
+            stm = connection.prepareStatement(sql);
             ResultSet rs = stm.executeQuery();
 
-            // Tạo map để lưu các Plan và tránh duplicate
-            Map<Integer, Plan> planMap = new HashMap<>();
-            
-            while (rs.next()) {
-                int planId = rs.getInt("PlanID");
-                
-                // Kiểm tra xem Plan đã có trong map chưa
-                Plan plan = planMap.get(planId);
-                if (plan == null) {
-                    plan = new Plan();
-                    plan.setId(planId);
-                    plan.setName(rs.getString("PlanName"));
-                    plan.setStart(rs.getDate("StartDate"));
-                    plan.setEnd(rs.getDate("EndDate"));
-                    
-                    // Tạo entity Department
-                    Department dept = new Department();
-                    dept.setId(rs.getInt("DepartmentID"));
-                    dept.setName(rs.getString("DepartmentName"));
-                    dept.setType(rs.getString("DepartmentType"));
-                    plan.setDept(dept);
+            Plan currentPlan = new Plan();
+            currentPlan.setId(-1);
+            PlanCampaign currentCampaign = new PlanCampaign();
+            currentCampaign.setId(-1);
+            SchedualCampaign currentSchedualCampaign = new SchedualCampaign();
+            currentSchedualCampaign.setId(-1);
 
-                    // Thêm Plan vào map
-                    planMap.put(planId, plan);
+            while (rs.next()) {
+                int planID = rs.getInt("PlanID");
+
+                if (planID != currentPlan.getId()) {
+                    currentPlan = new Plan();
+                    currentPlan.setId(planID);
+                    currentPlan.setName(rs.getString("PlanName"));
+                    currentPlan.setStart(rs.getDate("StartDate"));
+                    currentPlan.setEnd(rs.getDate("EndDate"));
+                    currentPlan.setCampaigns(new ArrayList<>());
+
+                    plans.add(currentPlan);
                 }
 
-                // Tạo entity Product
-                Product product = new Product();
-                product.setId(rs.getInt("ProductID"));
-                product.setName(rs.getString("ProductName"));
+                int campaignID = rs.getInt("PlanCampaignID");
+                if (campaignID != currentCampaign.getId()) {
+                    currentCampaign = new PlanCampaign();
+                    currentCampaign.setId(campaignID);
+                    currentCampaign.setQuantity(rs.getInt("PlanQuantity"));
+                    currentCampaign.setSchedualCampaigns(new ArrayList<>());
+                    currentPlan.getCampaigns().add(currentCampaign);
+                }
 
-                // Tạo entity PlanCampaign
-                PlanCampaign campain = new PlanCampaign();
-                campain.setId(rs.getInt("PlanCampainID"));
-                campain.setQuantity(rs.getInt("PlanQuantity"));
-                campain.setCost(rs.getFloat("CostPerProduct"));
-                campain.setProduct(product);
+                int schedualID = rs.getInt("ScID");
+                if (schedualID != currentSchedualCampaign.getId()) {
+                    currentSchedualCampaign = new SchedualCampaign();
+                    currentSchedualCampaign.setId(schedualID);
+                    currentSchedualCampaign.setDate(rs.getDate("SchedualDate"));
+                    currentSchedualCampaign.setShift(rs.getInt("Shift"));
+                    currentSchedualCampaign.setSchedualEmployees(new ArrayList<>());
+                    currentCampaign.getSchedualCampaigns().add(currentSchedualCampaign);
+                }
 
-                // Tạo entity SchedualCampaign
-                SchedualCampaign sc = new SchedualCampaign();
-                sc.setId(rs.getInt("SchedualCampainID"));
-                sc.setDate(rs.getDate("WorkDate"));
-                sc.setShift(rs.getString("Shift"));
+                SchedualEmployee schedualEmployee = new SchedualEmployee();
+                schedualEmployee.setId(rs.getInt("SchEmpID"));
+                schedualEmployee.setQuantity(rs.getDouble("EmployeeQuantity"));
 
-                // Tạo entity SchedualEmployee
-                SchedualEmployee se = new SchedualEmployee();
-                se.setId(rs.getInt("SchedualEmployeeID"));
-                se.setQuantity(rs.getInt("AssignedQuantity"));
-
-                // Tạo entity Employee
-                Employee employee = new Employee();
-                employee.setId(rs.getInt("EmployeeID"));
-                employee.setName(rs.getString("EmployeeName"));
-                se.setEmployee(employee);
-
-                // Tạo entity Attendance
                 Attendance attendance = new Attendance();
-                attendance.setId(rs.getInt("AttendanceID"));
-                attendance.setQuantityProduced(rs.getInt("QuantityProduced"));
-                se.getAttendances().add(attendance);
+                attendance.setId(rs.getInt("AttendentID"));
+                attendance.setQuantity(rs.getDouble("AttendanceQuantity"));
+                schedualEmployee.setAttendance(attendance);
 
-                sc.getSchedualEmployees().add(se);
-                campain.getSchedualCampaigns().add(sc);
-                plan.getCampains().add(campain);
+                currentSchedualCampaign.getSchedualEmployees().add(schedualEmployee);
             }
-            
-            // Thêm tất cả các Plan từ map vào list kết quả
-            plans.addAll(planMap.values());
-            
         } catch (SQLException ex) {
             Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
-                connection.close();
+                if (stm != null) {
+                    stm.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException ex) {
                 Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return plans;
-    
+    }
+
+    public ArrayList<Plan> planInfo() {
+        ArrayList<Plan> plans = list();
+
+        for (Plan plan : plans) {
+            int totalProduced = 0;
+            int totalPlanned = 0;
+
+            for (PlanCampaign campaign : plan.getCampaigns()) {
+                totalPlanned += campaign.getQuantity();
+                for (SchedualCampaign sc : campaign.getSchedualCampaigns()) {
+                    for (SchedualEmployee se : sc.getSchedualEmployees()) {
+                        Attendance att = se.getAttendance();
+                        totalProduced += att.getQuantity();
+                    }
+                }
+            }
+
+            plan.setTotalAccumulate(totalProduced);
+            plan.setRemainingQuantity(totalPlanned - totalProduced);
+
+            if (totalProduced >= totalPlanned) {
+                plan.setStatus("Completed");
+            } else if (plan.getEnd().before(new java.util.Date())) {
+                plan.setStatus("Late");
+            } else {
+                plan.setStatus("On Going");
+            }
+        }
+
+        return plans;
     }
 
     @Override

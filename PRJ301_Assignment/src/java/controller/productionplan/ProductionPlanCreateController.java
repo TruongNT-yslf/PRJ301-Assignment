@@ -90,11 +90,11 @@ public class ProductionPlanCreateController extends HttpServlet {
             c.setCost(raw_cost != null && raw_cost.length() > 0 ? Float.parseFloat(raw_cost) : 0);
 
             if (c.getQuantity() > 0 && c.getCost() > 0) {
-                plan.getCampains().add(c);
+                plan.getCampaigns().add(c);
             }
         }
 
-        if (plan.getCampains().size() > 0) {
+        if (plan.getCampaigns().size() > 0) {
             //insert
             PlanDBContext db = new PlanDBContext();
             db.insert(plan);
