@@ -75,13 +75,16 @@ public class UserDBContext extends DBContext<User> {
         return user;
     }
     public ArrayList<Role> getRoles(String username) {
-        String sql = "SELECT r.rid,r.rname,f.fid,f.fname,f.url FROM [User] u \n"
-                + "	INNER JOIN UserRole ur ON ur.username = u.username\n"
-                + "	INNER JOIN [Role] r ON r.rid = ur.rid\n"
-                + "	INNER JOIN RoleFeature rf ON r.rid = rf.rid\n"
-                + "	INNER JOIN Feature f ON f.fid = rf.fid\n"
-                + "WHERE u.username = ?\n"
-                + "ORDER BY r.rid, f.fid ASC";
+        String sql = """
+                     SELECT r.RoleID, r.RoleName, f.FeatureID, f.FeatureName, f.url
+                     FROM [User] u
+                     INNER JOIN UserRole ur ON ur.username = u.username
+                     INNER JOIN [Role] r ON r.RoleID = ur.RoleID
+                     INNER JOIN RoleFeature rf ON r.RoleID = rf.RoleID
+                     INNER JOIN Feature f ON f.FeatureID = rf.FeatureID
+                     WHERE u.username = ?
+                     ORDER BY r.RoleID ASC, f.FeatureID ASC;
+                     """;
         
         PreparedStatement stm = null;
         ArrayList<Role> roles = new ArrayList<>();
@@ -93,18 +96,18 @@ public class UserDBContext extends DBContext<User> {
             c_role.setId(-1);
             while(rs.next())
             {
-                int rid = rs.getInt("rid");
+                int rid = rs.getInt("RoleID");
                 if(rid != c_role.getId())
                 {
                     c_role = new Role();
                     c_role.setId(rid);
-                    c_role.setName(rs.getString("rname"));
+                    c_role.setName(rs.getString("RoleName"));
                     roles.add(c_role);
                 }
                 
                 Feature f = new Feature();
-                f.setId(rs.getInt("fid"));
-                f.setName(rs.getString("fname"));
+                f.setId(rs.getInt("FeatureID"));
+                f.setName(rs.getString("FeatureName"));
                 f.setUrl(rs.getString("url"));
                 c_role.getFeatures().add(f);
                 f.setRoles(roles);

@@ -4,21 +4,25 @@
  */
 package controller.accesscontrol;
 
-import constant.IConstant;
 import dao.UserDBContext;
+import entity.accesscontrol.Feature;
+import entity.accesscontrol.Role;
 import entity.accesscontrol.User;
 import java.io.IOException;
+import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author TruongNT <truongnthe186777 at fpt.edu.vn>
  */
-public class LoginController extends HttpServlet {
+public class HomeController extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -45,13 +49,14 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect("login.jsp");
-            return;
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("account");
+        if (user != null) {
+            UserDBContext db = new UserDBContext();
+            ArrayList<Role> userRoles = db.getRoles(user.getUsername());
+            request.setAttribute("roles", userRoles);
         }
-        response.sendRedirect("home");
-        //request.getRequestDispatcher(home.jsp).forward(request, response);
+        request.getRequestDispatcher("home.jsp").forward(request, response);
     }
 
     /**
@@ -65,32 +70,7 @@ public class LoginController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String user = request.getParameter("username");
-        String pass = request.getParameter("password");
-
-        if (!user.matches(IConstant.USERNAME_REGEX)) {
-            request.setAttribute("errorMessage", "Invalid username!");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-            return;
-        }
-
-        if (!pass.matches(IConstant.PASSWORD_REGEX)) {
-            request.setAttribute("errorMessage", "Invalid password!");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-            return;
-        }
-
-        UserDBContext db = new UserDBContext();
-        User account = db.getUser(user, pass);
-
-        if (account != null) {
-            request.getSession().setAttribute("account", account);
-            response.getWriter().println("login successful!");
-            response.sendRedirect("home");
-        } else {
-            request.setAttribute("errorMessage", "Login failed!");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**
