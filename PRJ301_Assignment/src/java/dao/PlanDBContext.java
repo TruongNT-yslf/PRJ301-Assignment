@@ -5,8 +5,6 @@
 package dao;
 
 import entity.Attendance;
-import entity.Department;
-import entity.Employee;
 import entity.Plan;
 import entity.PlanCampaign;
 import entity.Product;
@@ -16,9 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -251,7 +246,89 @@ public class PlanDBContext extends DBContext<Plan> {
 
     @Override
     public Plan get(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql
+                = """
+                                        SELECT 
+                                            p.PlanID, 
+                                            p.PlanName, 
+                                            p.StartDate, 
+                                            p.EndDate, 
+                                            pc.PlanCampaignID, 
+                                            pc.Quantity AS PlanQuantity, 
+                                            pc.ProductID, 
+                                            pr.ProductName, 
+                                            sc.ScID AS ScID, 
+                                            sc.Date AS SchedualDate, 
+                                            sc.Shift, 
+                                            sc.Quantity AS SchedualQuantity
+                                        FROM 
+                                            [Plan] p
+                                        JOIN 
+                                            PlanCampaign pc ON p.PlanID = pc.PlanID
+                                        JOIN 
+                                            Product pr ON pc.ProductID = pr.ProductID
+                                        JOIN 
+                                            SchedualCampaign sc ON pc.PlanCampaignID = sc.PlanCampaignID
+                                        WHERE 
+                                            p.PlanID = ?
+                                        ORDER BY pc.PlanCampaignID
+
+                """;
+        PreparedStatement stm = null;
+
+        try {
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, id);
+            ResultSet rs = stm.executeQuery();
+
+            Plan currentPlan = new Plan();
+            currentPlan.setId(-1);
+            PlanCampaign currentCampaign = new PlanCampaign();
+            currentCampaign.setId(-1);
+            SchedualCampaign currentSchedualCampaign = new SchedualCampaign();
+            currentSchedualCampaign.setId(-1);
+
+            while (rs.next()) {
+                int planID = rs.getInt("PlanID");
+
+                if (planID != currentPlan.getId()) {
+                    currentPlan = new Plan();
+                    currentPlan.setId(planID);
+                    currentPlan.setName(rs.getString("PlanName"));
+                    currentPlan.setStart(rs.getDate("StartDate"));
+                    currentPlan.setEnd(rs.getDate("EndDate"));
+                    currentPlan.setCampaigns(new ArrayList<>());
+                }
+
+                Product product = new Product();
+                product.setId(rs.getInt("ProductID"));
+                product.setName(rs.getString("ProductName"));
+
+                int campaignID = rs.getInt("PlanCampaignID");
+                if (campaignID != currentCampaign.getId()) {
+                    currentCampaign = new PlanCampaign();
+                    currentCampaign.setId(campaignID);
+                    currentCampaign.setQuantity(rs.getInt("PlanQuantity"));
+                    currentCampaign.setSchedualCampaigns(new ArrayList<>());
+                    currentPlan.getCampaigns().add(currentCampaign);
+                    currentCampaign.setProduct(product);
+                }
+
+                int schedualID = rs.getInt("ScID");
+                if (schedualID != currentSchedualCampaign.getId()) {
+                    currentSchedualCampaign = new SchedualCampaign();
+                    currentSchedualCampaign.setId(schedualID);
+                    currentSchedualCampaign.setDate(rs.getDate("SchedualDate"));
+                    currentSchedualCampaign.setShift(rs.getInt("Shift"));
+                    currentCampaign.getSchedualCampaigns().add(currentSchedualCampaign);
+                }
+
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
     }
 
 }
