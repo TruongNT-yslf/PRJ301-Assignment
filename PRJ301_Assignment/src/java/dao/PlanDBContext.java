@@ -4,6 +4,7 @@
  */
 package dao;
 
+import com.sun.jdi.connect.spi.Connection;
 import entity.Attendance;
 import entity.Plan;
 import entity.PlanCampaign;
@@ -14,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -356,8 +358,8 @@ public class PlanDBContext extends DBContext<Plan> {
         }
         return null;
     }
-    
-    public ArrayList<Product> getProductsByPlanId(int planId){
+
+    public ArrayList<Product> getProductsByPlanId(int planId) {
         String sql = """
                     select p.ProductID, p.ProductName
                     from Product p join PlanCampaign pc on p.ProductID = pc.ProductID
@@ -369,20 +371,20 @@ public class PlanDBContext extends DBContext<Plan> {
             stm = connection.prepareStatement(sql);
             stm.setInt(1, planId);
             ResultSet rs = stm.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 Product p = new Product();
                 p.setId(rs.getInt("ProductID"));
                 p.setName(rs.getString("ProductName"));
-                products.add(p);              
+                products.add(p);
             }
         } catch (SQLException ex) {
             Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
         return products;
-       
+
     }
-    
-    public ArrayList<SchedualCampaign> getSchedualCampaignsByPlanIdnProductId(int planId, int productId){
+
+    public ArrayList<SchedualCampaign> getSchedualCampaignsByPlanIdnProductId(int planId, int productId) {
         String sql = """
                     select sc.ScID, sc.Date, sc.Shift, sc.Quantity
                     from [Plan] p join PlanCampaign pc on p.PlanID = pc.PlanID join SchedualCampaign sc on sc.PlanCampaignID = pc.PlanCampaignID join Product pr on pc.ProductID = pr.ProductID
@@ -396,7 +398,7 @@ public class PlanDBContext extends DBContext<Plan> {
             stm.setInt(2, planId);
             stm.setInt(1, productId);
             ResultSet rs = stm.executeQuery();
-            while(rs.next()){
+            while (rs.next()) {
                 SchedualCampaign sc = new SchedualCampaign();
                 sc.setId(rs.getInt("ScID"));
                 sc.setDate(rs.getDate("Date"));
@@ -408,6 +410,37 @@ public class PlanDBContext extends DBContext<Plan> {
             Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
         return schedualCampaigns;
+    }
+
+    public boolean updateBatch(List<SchedualCampaign> campaigns) {
+        String sql = "UPDATE SchedualCampaign SET quantity = ? WHERE ScID = ?";
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            for (SchedualCampaign sc : campaigns) {
+                stm.setInt(1, sc.getQuantity());
+                stm.setInt(2, sc.getId());
+                stm.addBatch();
+            }
+            int[] updateCounts = stm.executeBatch(); 
+
+            for (int count : updateCounts) {
+                if (count == PreparedStatement.EXECUTE_FAILED) {
+                    return false;
+                }
+            }
+            return true; 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+        public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

@@ -61,6 +61,7 @@ public class ScheduleController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         int planId = Integer.parseInt(request.getParameter("planId"));
         PlanDBContext planDBContext = new PlanDBContext();
         Plan plan = planDBContext.getPlanInfo(planId);

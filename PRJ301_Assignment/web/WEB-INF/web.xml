@@ -24,6 +24,10 @@
         <servlet-name>ScheduleController</servlet-name>
         <servlet-class>controller.productionplan.ScheduleController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ScheduleUpdateController</servlet-name>
+        <servlet-class>controller.productionplan.ScheduleUpdateController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProductionPlanCreateController</servlet-name>
         <url-pattern>/productionplan/create</url-pattern>
@@ -47,5 +51,9 @@
     <servlet-mapping>
         <servlet-name>ScheduleController</servlet-name>
         <url-pattern>/productionplan/schedule</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ScheduleUpdateController</servlet-name>
+        <url-pattern>/productionplan/schedule/update</url-pattern>
     </servlet-mapping>
 </web-app>
