@@ -20,6 +20,10 @@
         <servlet-name>HomeController</servlet-name>
         <servlet-class>controller.accesscontrol.HomeController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ScheduleController</servlet-name>
+        <servlet-class>controller.productionplan.ScheduleController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProductionPlanCreateController</servlet-name>
         <url-pattern>/productionplan/create</url-pattern>
@@ -39,5 +43,9 @@
     <servlet-mapping>
         <servlet-name>HomeController</servlet-name>
         <url-pattern>/home</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ScheduleController</servlet-name>
+        <url-pattern>/productionplan/schedule</url-pattern>
     </servlet-mapping>
 </web-app>

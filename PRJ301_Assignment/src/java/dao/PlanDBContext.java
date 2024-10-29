@@ -248,30 +248,30 @@ public class PlanDBContext extends DBContext<Plan> {
     public Plan get(int id) {
         String sql
                 = """
-                                        SELECT 
-                                            p.PlanID, 
-                                            p.PlanName, 
-                                            p.StartDate, 
-                                            p.EndDate, 
-                                            pc.PlanCampaignID, 
-                                            pc.Quantity AS PlanQuantity, 
-                                            pc.ProductID, 
-                                            pr.ProductName, 
-                                            sc.ScID AS ScID, 
-                                            sc.Date AS SchedualDate, 
-                                            sc.Shift, 
-                                            sc.Quantity AS SchedualQuantity
-                                        FROM 
-                                            [Plan] p
-                                        JOIN 
-                                            PlanCampaign pc ON p.PlanID = pc.PlanID
-                                        JOIN 
-                                            Product pr ON pc.ProductID = pr.ProductID
-                                        JOIN 
-                                            SchedualCampaign sc ON pc.PlanCampaignID = sc.PlanCampaignID
-                                        WHERE 
-                                            p.PlanID = ?
-                                        ORDER BY pc.PlanCampaignID
+                SELECT 
+                    p.PlanID, 
+                    p.PlanName, 
+                    p.StartDate, 
+                    p.EndDate, 
+                    pc.PlanCampaignID, 
+                    pc.Quantity AS PlanQuantity, 
+                    pc.ProductID, 
+                    pr.ProductName, 
+                    sc.ScID AS ScID, 
+                    sc.Date AS SchedualDate, 
+                    sc.Shift, 
+                    sc.Quantity AS SchedualQuantity
+                FROM 
+                    [Plan] p
+                JOIN 
+                    PlanCampaign pc ON p.PlanID = pc.PlanID
+                JOIN 
+                    Product pr ON pc.ProductID = pr.ProductID
+                JOIN 
+                    SchedualCampaign sc ON pc.PlanCampaignID = sc.PlanCampaignID
+                WHERE 
+                    p.PlanID = ?
+                ORDER BY pc.PlanCampaignID
 
                 """;
         PreparedStatement stm = null;
@@ -329,6 +329,85 @@ public class PlanDBContext extends DBContext<Plan> {
         }
 
         return null;
+    }
+
+    public Plan getPlanInfo(int planId) {
+        String sql = """
+                    select PlanID, PlanName, StartDate, EndDate
+                    from [Plan]
+                    where PlanID = ?
+                     """;
+        PreparedStatement stm = null;
+        try {
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, planId);
+            ResultSet rs = stm.executeQuery();
+            Plan p = new Plan();
+            if (rs.next()) {
+
+                p.setId(planId);
+                p.setName(rs.getString("PlanName"));
+                p.setStart(rs.getDate("StartDate"));
+                p.setEnd(rs.getDate("EndDate"));
+                return p;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    public ArrayList<Product> getProductsByPlanId(int planId){
+        String sql = """
+                    select p.ProductID, p.ProductName
+                    from Product p join PlanCampaign pc on p.ProductID = pc.ProductID
+                    where pc.PlanID = ?
+                     """;
+        PreparedStatement stm = null;
+        ArrayList<Product> products = new ArrayList<>();
+        try {
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, planId);
+            ResultSet rs = stm.executeQuery();
+            while(rs.next()){
+                Product p = new Product();
+                p.setId(rs.getInt("ProductID"));
+                p.setName(rs.getString("ProductName"));
+                products.add(p);              
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return products;
+       
+    }
+    
+    public ArrayList<SchedualCampaign> getSchedualCampaignsByPlanIdnProductId(int planId, int productId){
+        String sql = """
+                    select sc.ScID, sc.Date, sc.Shift, sc.Quantity
+                    from [Plan] p join PlanCampaign pc on p.PlanID = pc.PlanID join SchedualCampaign sc on sc.PlanCampaignID = pc.PlanCampaignID join Product pr on pc.ProductID = pr.ProductID
+                    where pr.ProductID = ? and p.PlanID = ?
+                    order by sc.Date, sc.Shift
+                     """;
+        PreparedStatement stm = null;
+        ArrayList<SchedualCampaign> schedualCampaigns = new ArrayList<>();
+        try {
+            stm = connection.prepareStatement(sql);
+            stm.setInt(2, planId);
+            stm.setInt(1, productId);
+            ResultSet rs = stm.executeQuery();
+            while(rs.next()){
+                SchedualCampaign sc = new SchedualCampaign();
+                sc.setId(rs.getInt("ScID"));
+                sc.setDate(rs.getDate("Date"));
+                sc.setShift(rs.getInt("Shift"));
+                sc.setQuantity(rs.getInt("Quantity"));
+                schedualCampaigns.add(sc);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return schedualCampaigns;
     }
 
 }
