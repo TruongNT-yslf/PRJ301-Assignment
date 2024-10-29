@@ -80,10 +80,10 @@ public class ScheduleController extends HttpServlet {
             dateList.add(calendar.getTime());
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
-        request.setAttribute("dateList", dateList);
-        request.setAttribute("map", map);
-        request.setAttribute("plan", plan);
-        request.setAttribute("listProduct", listProduct);
+        request.getSession().setAttribute("dateList", dateList);
+        request.getSession().setAttribute("map", map);
+        request.getSession().setAttribute("plan", plan);
+        request.getSession().setAttribute("listProduct", listProduct);
         request.getRequestDispatcher("../view/productionplan/schedule.jsp").forward(request, response);
     }
 

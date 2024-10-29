@@ -4,6 +4,7 @@
  */
 package entity.accesscontrol;
 
+import entity.Employee;
 import java.util.ArrayList;
 
 /**
@@ -14,7 +15,16 @@ public class User {
 
     private String username;
     private String password;
+    private Employee employee;
     private ArrayList<Role> roles = new ArrayList<>();
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
 
     public ArrayList<Role> getRoles() {
         return roles;

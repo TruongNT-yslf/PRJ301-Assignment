@@ -1,6 +1,8 @@
 package controller.productionplan;
 
 import dao.PlanDBContext;
+import entity.Plan;
+import entity.Product;
 import entity.SchedualCampaign;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -8,7 +10,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Servlet to handle updates to the schedule.
@@ -41,32 +45,44 @@ public class ScheduleUpdateController extends HttpServlet {
                 db = new PlanDBContext();
                 updateSuccess = db.updateBatch(campaigns);
             } catch (Exception e) {
-                e.printStackTrace();
                 log("Error updating SchedualCampaign data: " + e.getMessage());
             } finally {
                 if (db != null) {
                     try {
                         db.close();
                     } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
+        // load lai du lieu 
+        // set attt
+        Plan plan = (Plan)request.getSession().getAttribute("plan");
+        System.err.println("adasdas"+ plan);
+        PlanDBContext planDBContext = new PlanDBContext();
+        List<Product> listProduct = planDBContext.getProductsByPlanId(plan.getId());
+        Map<Integer, List<SchedualCampaign>> map = new HashMap();
 
-        // Thêm thông báo vào session
+        for (Product product : listProduct) {
+            List<SchedualCampaign> lst = planDBContext.getSchedualCampaignsByPlanIdnProductId(plan.getId(), product.getId());
+            map.put(product.getId(), lst);
+        }
+        request.getSession().setAttribute("map", map);
+        System.err.println("adasdas   sdsdsd" + listProduct);
+        request.getSession().setAttribute("listProduct", listProduct);
+        
+
         if (updateSuccess) {
-            response.getWriter().println("Update Successfully!");
-            request.getSession().setAttribute("message", "Cập nhật thành công!");
+            //response.getWriter().println("Update Successfully!");
+            request.getSession().setAttribute("message", "Update Successfully!");
             request.getSession().setAttribute("updateSuccess", true);
         } else {
-            response.getWriter().println("Update Fail!");
-            request.getSession().setAttribute("message", "Cập nhật thất bại!");
+            //response.getWriter().println("Update Fail!");
+            request.getSession().setAttribute("message", "Update Fail!");
             request.getSession().setAttribute("updateSuccess", false);
         }
-        // response.sendRedirect(request.getContextPath() + "/view/productionplan/schedule.jsp");
+         response.sendRedirect(request.getContextPath() + "/view/productionplan/schedule.jsp");
         //response.sendRedirect(request.getContextPath() + "/productionplan/schedule");
     }
 

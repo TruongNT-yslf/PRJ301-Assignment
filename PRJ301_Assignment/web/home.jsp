@@ -155,7 +155,7 @@
 <body>
     <div class="container">
         <h1>Home Page</h1>
-        <p class="welcome-message">Chào mừng, ${sessionScope.account.username}!</p>
+        <p class="welcome-message">Chào mừng, ${sessionScope.account.employee.employeeName}!</p>
 
         <ul class="role-list">
             <!-- Lặp qua từng vai trò trong requestScope.roles -->

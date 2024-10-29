@@ -30,7 +30,7 @@
     </servlet>
     <servlet>
         <servlet-name>AttendanceController</servlet-name>
-        <servlet-class>controller.productionplan.AttendanceController</servlet-class>
+        <servlet-class>controller.attendance.AttendanceListController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ProductionPlanCreateController</servlet-name>

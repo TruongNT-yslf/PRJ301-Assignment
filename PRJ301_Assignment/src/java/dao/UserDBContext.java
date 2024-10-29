@@ -4,6 +4,7 @@
  */
 package dao;
 
+import entity.Employee;
 import entity.accesscontrol.Feature;
 import entity.accesscontrol.Role;
 import entity.accesscontrol.User;
@@ -47,8 +48,8 @@ public class UserDBContext extends DBContext<User> {
 
     public User getUser(String username, String password) {
         String sql = """
-                     SELECT username FROM [User] 
-                                     WHERE username = ? AND [password] = ?
+                     SELECT u.UserName, u.EmployeeID,e.EmployeeName FROM [User] u join Employee e on u.employeeId = e.EmployeeID
+                                                                          WHERE username = ? AND [password] = ?
                      """;
 
         PreparedStatement stm = null;
@@ -61,6 +62,10 @@ public class UserDBContext extends DBContext<User> {
             if (rs.next()) {
                 user = new User();
                 user.setUsername(username);
+                Employee e = new Employee();
+                e.setId(rs.getInt("employeeId"));
+                e.setEmployeeName(rs.getString("EmployeeName"));
+                user.setEmployee(e);
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserDBContext.class.getName()).log(Level.SEVERE, null, ex);
