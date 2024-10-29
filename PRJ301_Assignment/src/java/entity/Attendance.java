@@ -11,7 +11,7 @@ package entity;
  */
 public class Attendance {
     private int id;
-    private int schEmpID;
+    private SchedualEmployee schEmp;
     private double quantity;
     private double alpha;
 
@@ -23,13 +23,15 @@ public class Attendance {
         this.id = id;
     }
 
-    public int getSchEmpID() {
-        return schEmpID;
+    public SchedualEmployee getSchEmp() {
+        return schEmp;
     }
 
-    public void setSchEmpID(int schEmpID) {
-        this.schEmpID = schEmpID;
+    public void setSchEmp(SchedualEmployee schEmp) {
+        this.schEmp = schEmp;
     }
+
+
 
     public double getQuantity() {
         return quantity;

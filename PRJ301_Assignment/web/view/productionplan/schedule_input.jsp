@@ -46,6 +46,21 @@
                 color: red;
                 font-size: 0.9em;
             }
+            .logout-link {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #ffffff;
+                background-color: #dc3545;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: bold;
+            }
+            .logout-link:hover {
+                background-color: #c82333;
+            }
         </style>
         <script>
             function validateForm() {
@@ -68,6 +83,6 @@
                 <div id="error" class="error-message"></div>
             </form>
         </div>
+        <a href="/assignment/logout" class="logout-link">Logout</a>
     </body>
 </html>
-    

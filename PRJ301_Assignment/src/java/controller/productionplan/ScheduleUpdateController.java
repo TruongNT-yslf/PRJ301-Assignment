@@ -14,7 +14,6 @@ import java.util.List;
  * Servlet to handle updates to the schedule.
  */
 public class ScheduleUpdateController extends HttpServlet {
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -59,14 +58,16 @@ public class ScheduleUpdateController extends HttpServlet {
 
         // Thêm thông báo vào session
         if (updateSuccess) {
+            response.getWriter().println("Update Successfully!");
             request.getSession().setAttribute("message", "Cập nhật thành công!");
             request.getSession().setAttribute("updateSuccess", true);
         } else {
+            response.getWriter().println("Update Fail!");
             request.getSession().setAttribute("message", "Cập nhật thất bại!");
             request.getSession().setAttribute("updateSuccess", false);
         }
-        //response.sendRedirect(request.getContextPath() + "/view/productionplan/schedule.jsp");
-        response.sendRedirect(request.getContextPath() + "/productionplan/schedule");
+        // response.sendRedirect(request.getContextPath() + "/view/productionplan/schedule.jsp");
+        //response.sendRedirect(request.getContextPath() + "/productionplan/schedule");
     }
 
     @Override

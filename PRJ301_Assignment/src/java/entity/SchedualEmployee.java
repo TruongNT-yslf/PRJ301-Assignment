@@ -18,7 +18,18 @@ public class SchedualEmployee {
     private Employee employee;
     private double quantity;
     private Attendance attendance; 
+    private String status;
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    
+    
     public int getId() {
         return id;
     }
