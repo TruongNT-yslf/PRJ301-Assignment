@@ -4,10 +4,14 @@
  */
 package controller.productionplan;
 
+import controller.accesscontrol.AccessControlController;
 import dao.PlanDBContext;
+import dao.UserDBContext;
 import entity.Plan;
 import entity.Product;
 import entity.SchedualCampaign;
+import entity.accesscontrol.Role;
+import entity.accesscontrol.User;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -24,45 +28,39 @@ import java.util.Map;
  *
  * @author TruongNT <truongnthe186777 at fpt.edu.vn>
  */
-public class ScheduleController extends HttpServlet {
+public class ScheduleController extends AccessControlController {
+        @Override
+    protected boolean isAuthorized(HttpServletRequest req, User account) {
+        UserDBContext db = new UserDBContext();
+        ArrayList<Role> roles = db.getRoles(account.getUsername());
+        account.setRoles(roles);
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        request.getRequestDispatcher("../view/productionplan/schedule_input.jsp").forward(request, response);
+        for (Role role : account.getRoles()) {
+            if (role.getName().equals("Production Manager")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
-     * Handles the HTTP <code>POST</code> method.
+     * Returns a short description of the servlet.
      *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @return a String containing servlet description
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
 
-        int planId = Integer.parseInt(request.getParameter("planId"));
+    @Override
+    protected void doAuthorizedGet(HttpServletRequest req, HttpServletResponse resp, User account) throws ServletException, IOException {
+        req.getRequestDispatcher("../view/productionplan/schedule_input.jsp").forward(req, resp);
+    }
+
+    @Override
+    protected void doAuthorizedPost(HttpServletRequest req, HttpServletResponse resp, User account) throws ServletException, IOException {
+        int planId = Integer.parseInt(req.getParameter("planId"));
         PlanDBContext planDBContext = new PlanDBContext();
         Plan plan = planDBContext.getPlanInfo(planId);
         List<Product> listProduct = planDBContext.getProductsByPlanId(planId);
@@ -80,21 +78,11 @@ public class ScheduleController extends HttpServlet {
             dateList.add(calendar.getTime());
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
-        request.getSession().setAttribute("dateList", dateList);
-        request.getSession().setAttribute("map", map);
-        request.getSession().setAttribute("plan", plan);
-        request.getSession().setAttribute("listProduct", listProduct);
-        request.getRequestDispatcher("../view/productionplan/schedule.jsp").forward(request, response);
+        req.getSession().setAttribute("dateList", dateList);
+        req.getSession().setAttribute("map", map);
+        req.getSession().setAttribute("plan", plan);
+        req.getSession().setAttribute("listProduct", listProduct);
+        req.getRequestDispatcher("../view/productionplan/schedule.jsp").forward(req, resp);
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
 }

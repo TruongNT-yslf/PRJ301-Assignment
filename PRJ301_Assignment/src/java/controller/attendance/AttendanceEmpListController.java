@@ -5,14 +5,12 @@
 package controller.attendance;
 
 import controller.accesscontrol.AccessControlController;
-import dao.DepartmentDBContext;
 import dao.SchedualEmployeeDBContext;
-import dao.ScheduleCampaignDBContext;
 import dao.UserDBContext;
-import entity.Department;
 import entity.SchedualEmployee;
 import entity.accesscontrol.Role;
 import entity.accesscontrol.User;
+import jakarta.servlet.RequestDispatcher;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -20,13 +18,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.sql.Date;
 
 /**
  *
  * @author TruongNT <truongnthe186777 at fpt.edu.vn>
  */
-public class AttendanceListController extends AccessControlController {
+public class AttendanceEmpListController extends AccessControlController {
+
     @Override
     protected boolean isAuthorized(HttpServletRequest req, User account) {
         UserDBContext db = new UserDBContext();
@@ -53,33 +51,32 @@ public class AttendanceListController extends AccessControlController {
 
     @Override
     protected void doAuthorizedGet(HttpServletRequest req, HttpServletResponse resp, User account) throws ServletException, IOException {
-        SchedualEmployeeDBContext schedualEmployeeDBContext = new SchedualEmployeeDBContext();
-        DepartmentDBContext departmentDBContext = new DepartmentDBContext();
-        ScheduleCampaignDBContext dbcam = new ScheduleCampaignDBContext();
-        ArrayList<Department> depts = departmentDBContext.getDepartmentWithType("WS");
-        ArrayList<Date> dates = dbcam.getDates();
-        req.getSession().setAttribute("departments", depts);
-        req.getSession().setAttribute("dates", dates);
-        req.getRequestDispatcher("../view/attendance/attendance_info.jsp").forward(req, resp);
+        req.getRequestDispatcher("../view/attendance/attendance_history.jsp").forward(req, resp);
     }
 
     @Override
     protected void doAuthorizedPost(HttpServletRequest req, HttpServletResponse resp, User account) throws ServletException, IOException {
-        int departmentId = Integer.parseInt(req.getParameter("departmentId"));
-        String dateStr = req.getParameter("date");
-        int shift = Integer.parseInt(req.getParameter("shift"));
+        String employeeIdParam = req.getParameter("employeeId");
 
-        Date date = Date.valueOf(dateStr);
+        if (employeeIdParam == null || employeeIdParam.isEmpty()) {
+            req.setAttribute("error", "Employee ID is required.");
+            req.getRequestDispatcher("../view/attendance/attendance_history.jsp").forward(req, resp);
+            return;
+        }
 
-        SchedualEmployeeDBContext schedualEmployeeDBContext = new SchedualEmployeeDBContext();
-        ArrayList<SchedualEmployee> attendanceInfo = schedualEmployeeDBContext.getAttendanceInfo(departmentId, dateStr, shift);
+        try {
+            int employeeId = Integer.parseInt(employeeIdParam);
 
-        req.setAttribute("attendanceInfo", attendanceInfo);
-        req.setAttribute("selectedDepartmentId", departmentId);
-        req.setAttribute("selectedDate", dateStr);
-        req.setAttribute("selectedShift", shift);
+            SchedualEmployeeDBContext db = new SchedualEmployeeDBContext();
+            ArrayList<SchedualEmployee> employeeAttendanceHistory = db.getEmployeeAttendanceHistory(employeeId);
 
-        req.getRequestDispatcher("../view/attendance/attendance_info.jsp").forward(req, resp);
+            req.setAttribute("attendanceHistory", employeeAttendanceHistory);
+            req.setAttribute("employeeId", employeeId);
+        } catch (NumberFormatException e) {
+            req.setAttribute("error", "Invalid Employee ID format.");
+        }
+
+        req.getRequestDispatcher("../view/attendance/attendance_history.jsp").forward(req, resp);
     }
 
 }

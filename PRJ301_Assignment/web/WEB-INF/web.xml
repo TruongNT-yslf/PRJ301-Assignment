@@ -32,6 +32,10 @@
         <servlet-name>AttendanceController</servlet-name>
         <servlet-class>controller.attendance.AttendanceListController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AttendanceEmpListController</servlet-name>
+        <servlet-class>controller.attendance.AttendanceEmpListController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ProductionPlanCreateController</servlet-name>
         <url-pattern>/productionplan/create</url-pattern>
@@ -63,5 +67,9 @@
     <servlet-mapping>
         <servlet-name>AttendanceController</servlet-name>
         <url-pattern>/attendance/attendanceinfo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AttendanceEmpListController</servlet-name>
+        <url-pattern>/attendance/emphistory</url-pattern>
     </servlet-mapping>
 </web-app>

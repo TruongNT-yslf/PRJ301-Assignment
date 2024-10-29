@@ -126,4 +126,55 @@ public class SchedualEmployeeDBContext extends DBContext<SchedualEmployee> {
         return schedualEmployees;
     }
 
+    public ArrayList<SchedualEmployee> getEmployeeAttendanceHistory(int employeeId) {
+        ArrayList<SchedualEmployee> attendanceHistory = new ArrayList<>();
+        String sql = """
+                SELECT 
+                    se.SchEmpID,
+                    sc.Date,
+                    sc.Shift,
+                    se.Quantity AS PlannedQuantity,
+                    COALESCE(a.Quantity, 0) AS CompletedQuantity,
+                CASE 
+                    WHEN a.Alpha = 1 THEN 'Achieved the target'
+                    WHEN a.Alpha < 1 THEN 'Not achieved the target'  
+                    ELSE 'Exceeded the target' 
+                END AS TargetStatus
+                FROM 
+                    SchedualEmployee se
+                JOIN 
+                    SchedualCampaign sc ON se.ScID = sc.ScID
+                LEFT JOIN 
+                    Attendence a ON se.SchEmpID = a.SchEmpID
+                WHERE 
+                    se.EmployeeID = ?
+                ORDER BY 
+                    sc.Date DESC, sc.Shift ASC;
+                 """;
+
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setInt(1, employeeId);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                SchedualEmployee se = new SchedualEmployee();
+                se.setId(rs.getInt("SchEmpID"));
+                se.setQuantity(rs.getInt("PlannedQuantity"));
+                se.setStatus(rs.getString("TargetStatus"));
+
+                SchedualCampaign sc = new SchedualCampaign();
+                sc.setDate(rs.getDate("Date"));
+                sc.setShift(rs.getInt("Shift"));
+                se.setSchedualCampaign(sc);
+
+                Attendance attendance = new Attendance();
+                attendance.setQuantity(rs.getDouble("CompletedQuantity"));
+                se.setAttendance(attendance);
+
+                attendanceHistory.add(se);
+            }
+        } catch (SQLException e) {
+        }
+        return attendanceHistory;
+    }
+
 }
