@@ -429,7 +429,6 @@ public class PlanDBContext extends DBContext<Plan> {
             }
             return true; 
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -438,7 +437,6 @@ public class PlanDBContext extends DBContext<Plan> {
             try {
                 connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
     }
