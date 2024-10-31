@@ -6,69 +6,125 @@
         <meta charset="UTF-8">
         <title>Danh sách Kế hoạch Sản xuất</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
-        <style>
-            body {
-                padding: 20px;
-                background-color: #f8f9fa;
-            }
-            h1 {
-                margin-bottom: 20px;
-                color: #343a40;
-            }
-            table {
-                margin-top: 20px;
-                border-radius: 0.5rem;
-                overflow: hidden;
-                box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            }
-            thead {
-                background-color: #007bff;
-                color: white;
-            }
-            th, td {
-                vertical-align: middle;
-                text-align: center;
-                padding: 15px 20px; /* Tăng padding để làm to các ô */
-            }
-            tbody tr:hover {
-                background-color: #e9ecef;
-            }
-            .status-completed {
-                background-color: #28a745;
-                color: white;
-                border-radius: 0.25rem;
-                padding: 5px 10px;
-            }
-            .status-late {
-                background-color: #dc3545;
-                color: white;
-                border-radius: 0.25rem;
-                padding: 5px 10px;
-            }
-            .status-on-going {
-                background-color: #ffc107;
-                color: black;
-                border-radius: 0.25rem;
-                padding: 5px 10px;
-            }
-            .logout-link {
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                padding: 10px 20px;
-                font-size: 16px;
-                color: #ffffff;
-                background-color: #dc3545;
-                border-radius: 5px;
-                text-decoration: none;
-                font-weight: bold;
-            }
-            .logout-link:hover {
-                background-color: #c82333;
-            }
-        </style>
+<style>
+    /* Định dạng chung */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f7f9;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+
+    /* Tiêu đề trang */
+    h1 {
+        color: #4a5568;
+        font-size: 2.2em;
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+
+    /* Định dạng nút Home */
+    .home-button {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        padding: 10px 18px;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 20px;
+        transition: background-color 0.3s ease;
+    }
+
+    .home-button:hover {
+        background-color: #2980b9;
+    }
+
+    /* Bảng danh sách */
+    .table {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        border-collapse: separate;
+        border-spacing: 0;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Định dạng tiêu đề và nội dung */
+    .table th, .table td {
+        padding: 15px;
+        vertical-align: middle;
+        border: 1px solid #dee2e6;
+        text-align: center;
+        font-size: 1em;
+    }
+
+    .table th {
+        background-color: #3498db;
+        color: #fff;
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    /* Cột tiêu đề hẹp */
+    .table th, .table td {
+        width: 10%;  /* Căn cứ cho các cột khác */
+    }
+
+    /* Cột “Số lượng còn lại” rộng hơn */
+    .table td.remaining-column, .table th.remaining-column {
+        width: 30%;  /* Tăng chiều rộng cho cột này */
+    }
+
+    /* Hàng sọc */
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9f9f9;
+    }
+
+    /* Định dạng trạng thái */
+    .status-completed {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .status-late {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+
+    .status-on-going {
+        color: #f39c12;
+        font-weight: bold;
+    }
+
+    /* Định dạng liên kết đăng xuất */
+    .logout-link {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 25px;
+        color: #e74c3c;
+        font-weight: bold;
+        border: 2px solid #e74c3c;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .logout-link:hover {
+        background-color: #e74c3c;
+        color: #fff;
+    }
+</style>
+
+
+
+
     </head>
     <body>
+        <button class="home-button" onclick="window.location.href = '/assignment/home'">Home</button>
         <h1>Danh sách Kế hoạch Sản xuất</h1>
         <table class="table table-bordered table-striped">
             <thead>

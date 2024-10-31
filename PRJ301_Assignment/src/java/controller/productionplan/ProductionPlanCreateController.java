@@ -16,9 +16,7 @@ import entity.Product;
 import entity.accesscontrol.Role;
 import entity.accesscontrol.User;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Date;
@@ -29,19 +27,21 @@ import java.util.ArrayList;
  * @author TruongNT <truongnthe186777 at fpt.edu.vn>
  */
 public class ProductionPlanCreateController extends AccessControlController {
+
     @Override
     protected boolean isAuthorized(HttpServletRequest req, User account) {
-                UserDBContext db = new UserDBContext();
+        UserDBContext db = new UserDBContext();
         ArrayList<Role> roles = db.getRoles(account.getUsername());
         account.setRoles(roles);
-        
-        for(Role role : account.getRoles()){
-            if(role.getName().equals("Production Manager")){
+
+        for (Role role : account.getRoles()) {
+            if (role.getName().equals("Production Manager")) {
                 return true;
             }
         }
         return false;
     }
+
     @Override
     protected void doAuthorizedGet(HttpServletRequest req, HttpServletResponse resp, User account) throws ServletException, IOException {
         ProductDBContext dbProduct = new ProductDBContext();

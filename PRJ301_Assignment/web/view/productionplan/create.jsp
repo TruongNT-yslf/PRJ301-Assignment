@@ -96,6 +96,7 @@
         </style>
     </head>
     <body>
+        <button class="home-button" onclick="window.location.href = '/assignment/home'">Home</button>
         <form action="create" method="POST">
             Plan title: <input type="text" name="name"/> <br/>
             From : <input type="date" name="from"/> To: <input type="date" name="to"/> <br/>

@@ -14,7 +14,6 @@ import entity.accesscontrol.Role;
 import entity.accesscontrol.User;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -29,7 +28,8 @@ import java.util.Map;
  * @author TruongNT <truongnthe186777 at fpt.edu.vn>
  */
 public class ScheduleController extends AccessControlController {
-        @Override
+
+    @Override
     protected boolean isAuthorized(HttpServletRequest req, User account) {
         UserDBContext db = new UserDBContext();
         ArrayList<Role> roles = db.getRoles(account.getUsername());
@@ -55,6 +55,9 @@ public class ScheduleController extends AccessControlController {
 
     @Override
     protected void doAuthorizedGet(HttpServletRequest req, HttpServletResponse resp, User account) throws ServletException, IOException {
+        PlanDBContext planDBContext = new PlanDBContext();
+        ArrayList<Plan> plans = planDBContext.getAllPlans();
+        req.getSession().setAttribute("plans", plans);
         req.getRequestDispatcher("../view/productionplan/schedule_input.jsp").forward(req, resp);
     }
 

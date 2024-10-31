@@ -79,6 +79,7 @@ public class UserDBContext extends DBContext<User> {
         }
         return user;
     }
+
     public ArrayList<Role> getRoles(String username) {
         String sql = """
                      SELECT r.RoleID, r.RoleName, f.FeatureID, f.FeatureName, f.url
@@ -90,7 +91,7 @@ public class UserDBContext extends DBContext<User> {
                      WHERE u.username = ?
                      ORDER BY r.RoleID ASC, f.FeatureID ASC;
                      """;
-        
+
         PreparedStatement stm = null;
         ArrayList<Role> roles = new ArrayList<>();
         try {
@@ -99,17 +100,15 @@ public class UserDBContext extends DBContext<User> {
             ResultSet rs = stm.executeQuery();
             Role c_role = new Role();
             c_role.setId(-1);
-            while(rs.next())
-            {
+            while (rs.next()) {
                 int rid = rs.getInt("RoleID");
-                if(rid != c_role.getId())
-                {
+                if (rid != c_role.getId()) {
                     c_role = new Role();
                     c_role.setId(rid);
                     c_role.setName(rs.getString("RoleName"));
                     roles.add(c_role);
                 }
-                
+
                 Feature f = new Feature();
                 f.setId(rs.getInt("FeatureID"));
                 f.setName(rs.getString("FeatureName"));
@@ -119,9 +118,7 @@ public class UserDBContext extends DBContext<User> {
             }
         } catch (SQLException ex) {
             Logger.getLogger(UserDBContext.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        finally
-        {
+        } finally {
             try {
                 stm.close();
                 connection.close();
@@ -129,7 +126,7 @@ public class UserDBContext extends DBContext<User> {
                 Logger.getLogger(UserDBContext.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         return roles;
     }
 }

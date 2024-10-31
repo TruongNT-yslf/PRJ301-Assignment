@@ -2,16 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package entity;
 
 import java.util.ArrayList;
 
 /**
- * 
+ *
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
  */
 public class PlanCampaign {
+
     private int id;
     private Plan plan;
     private Product product;
@@ -67,6 +67,4 @@ public class PlanCampaign {
         this.schedualCampaigns = schedualCampaigns;
     }
 
-
-    
 }

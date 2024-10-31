@@ -117,6 +117,7 @@
         </style>
     </head>
     <body>
+        <button class="home-button" onclick="window.location.href = '/assignment/home'">Home</button>
 
         <h2>Attendance History and Performance Analysis</h2>
 

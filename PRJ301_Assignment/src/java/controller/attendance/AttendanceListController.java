@@ -14,9 +14,7 @@ import entity.SchedualEmployee;
 import entity.accesscontrol.Role;
 import entity.accesscontrol.User;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -27,6 +25,7 @@ import java.sql.Date;
  * @author TruongNT <truongnthe186777 at fpt.edu.vn>
  */
 public class AttendanceListController extends AccessControlController {
+
     @Override
     protected boolean isAuthorized(HttpServletRequest req, User account) {
         UserDBContext db = new UserDBContext();

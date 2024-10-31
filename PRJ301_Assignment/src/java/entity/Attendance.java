@@ -2,14 +2,14 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package entity;
 
 /**
- * 
+ *
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
  */
 public class Attendance {
+
     private int id;
     private SchedualEmployee schEmp;
     private double quantity;
@@ -30,8 +30,6 @@ public class Attendance {
     public void setSchEmp(SchedualEmployee schEmp) {
         this.schEmp = schEmp;
     }
-
-
 
     public double getQuantity() {
         return quantity;

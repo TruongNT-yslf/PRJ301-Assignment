@@ -6,7 +6,6 @@ package entity;
 
 import java.util.ArrayList;
 
-
 /**
  *
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
@@ -14,10 +13,10 @@ import java.util.ArrayList;
 public class SchedualEmployee {
 
     private int id;
-    private SchedualCampaign schedualCampaign; 
+    private SchedualCampaign schedualCampaign;
     private Employee employee;
     private double quantity;
-    private Attendance attendance; 
+    private Attendance attendance;
     private String status;
 
     public String getStatus() {
@@ -28,8 +27,6 @@ public class SchedualEmployee {
         this.status = status;
     }
 
-    
-    
     public int getId() {
         return id;
     }
@@ -37,8 +34,6 @@ public class SchedualEmployee {
     public void setId(int id) {
         this.id = id;
     }
-
-
 
     public SchedualCampaign getSchedualCampaign() {
         return schedualCampaign;
@@ -72,8 +67,4 @@ public class SchedualEmployee {
         this.attendance = attendance;
     }
 
-    
-
-    
-    
 }

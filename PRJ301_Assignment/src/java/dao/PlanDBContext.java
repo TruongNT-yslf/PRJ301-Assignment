@@ -4,7 +4,7 @@
  */
 package dao;
 
-import com.sun.jdi.connect.spi.Connection;
+
 import entity.Attendance;
 import entity.Plan;
 import entity.PlanCampaign;
@@ -420,25 +420,48 @@ public class PlanDBContext extends DBContext<Plan> {
                 stm.setInt(2, sc.getId());
                 stm.addBatch();
             }
-            int[] updateCounts = stm.executeBatch(); 
+            int[] updateCounts = stm.executeBatch();
 
             for (int count : updateCounts) {
                 if (count == PreparedStatement.EXECUTE_FAILED) {
                     return false;
                 }
             }
-            return true; 
+            return true;
         } catch (SQLException e) {
             return false;
         }
     }
-        public void close() {
+
+    public void close() {
         if (connection != null) {
             try {
                 connection.close();
             } catch (SQLException e) {
             }
         }
+    }
+
+    public ArrayList<Plan> getAllPlans() {
+        String sql = """
+                    select PlanID, PlanName
+                    from [Plan]
+                     """;
+        PreparedStatement stm = null;
+        ArrayList<Plan> plans = new ArrayList<>();
+        try {
+            stm = connection.prepareStatement(sql);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {                
+                Plan plan = new Plan();
+                plan.setId(rs.getInt("PlanID"));
+                plan.setName(rs.getString("PlanName"));
+                plans.add(plan);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return plans;
     }
 
 }

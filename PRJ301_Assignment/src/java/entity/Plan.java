@@ -47,7 +47,6 @@ public class Plan {
         this.status = status;
     }
 
-    
     public int getId() {
         return id;
     }

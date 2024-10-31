@@ -2,19 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package entity;
 
 import entity.accesscontrol.Role;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * 
+ *
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
  */
 public class Employee {
+
     private int id;
     private String employeeName;
     private boolean gender;
@@ -24,6 +23,16 @@ public class Employee {
     private Department department;
     private double salary;
     private ArrayList<SchedualEmployee> schedualEmployees = new ArrayList<>();
+    private double productivity;
+
+    
+    public double getProductivity() {
+        return productivity;
+    }
+
+    public void setProductivity(double productivity) {
+        this.productivity = productivity;
+    }   
 
     public int getId() {
         return id;
@@ -96,7 +105,5 @@ public class Employee {
     public void setSchedualEmployees(ArrayList<SchedualEmployee> schedualEmployees) {
         this.schedualEmployees = schedualEmployees;
     }
-
-    
 
 }

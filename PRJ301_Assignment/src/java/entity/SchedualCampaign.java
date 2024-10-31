@@ -2,24 +2,23 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 package entity;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * 
+ *
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
  */
 public class SchedualCampaign {
+
     private int id;
     private PlanCampaign planCampaign;
     private java.sql.Date date;
     private int shift;
     private int quantity;
-    private ArrayList<SchedualEmployee> schedualEmployees = new ArrayList<>(); 
+    private ArrayList<SchedualEmployee> schedualEmployees = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -69,5 +68,4 @@ public class SchedualCampaign {
         this.schedualEmployees = schedualEmployees;
     }
 
-    
 }

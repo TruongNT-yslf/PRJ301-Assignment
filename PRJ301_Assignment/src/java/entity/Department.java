@@ -6,7 +6,6 @@ package entity;
 
 import java.util.ArrayList;
 
-
 /**
  *
  * @author TruongNTHE186777 <truongthuankhiet@gmail.com>
@@ -50,5 +49,4 @@ public class Department {
         this.employees = employees;
     }
 
-    
 }
