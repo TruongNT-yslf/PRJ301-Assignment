@@ -192,7 +192,7 @@
             <form name="planForm" action="schedule" method="POST" onsubmit="return validateForm()">
                 <select id="planId" name="planId">
                     <option value="">-- Select Plan --</option>
-                    <c:forEach items="${sessionScope.plans}" var="plan">
+                    <c:forEach items="${requestScope.plans}" var="plan">
                         <option value="${plan.id}">${plan.name}</option>
                     </c:forEach>
                 </select>
@@ -201,4 +201,4 @@
             </form>
         </div>
     </body>
-</html>
+</html> 

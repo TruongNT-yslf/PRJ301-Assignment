@@ -4,7 +4,6 @@
  */
 package dao;
 
-
 import entity.Attendance;
 import entity.Plan;
 import entity.PlanCampaign;
@@ -55,7 +54,7 @@ public class PlanDBContext extends DBContext<Plan> {
             }
 
             for (PlanCampaign campain : entity.getCampaigns()) {
-                String sql_insert_campain = "INSERT INTO [PlanCampain]\n"
+                String sql_insert_campain = "INSERT INTO [PlanCampaign]\n"
                         + "           ([PlanID]\n"
                         + "           ,[ProductID]\n"
                         + "           ,[Quantity]\n"
@@ -413,34 +412,36 @@ public class PlanDBContext extends DBContext<Plan> {
     }
 
     public boolean updateBatch(List<SchedualCampaign> campaigns) {
-        String sql = "UPDATE SchedualCampaign SET quantity = ? WHERE ScID = ?";
+        String sql = "UPDATE SchedualCampaign SET Quantity = ? WHERE ScID = ?";
         try (PreparedStatement stm = connection.prepareStatement(sql)) {
             for (SchedualCampaign sc : campaigns) {
                 stm.setInt(1, sc.getQuantity());
                 stm.setInt(2, sc.getId());
                 stm.addBatch();
             }
-            int[] updateCounts = stm.executeBatch();
+            int[] updateCounts = stm.executeBatch(); 
 
             for (int count : updateCounts) {
                 if (count == PreparedStatement.EXECUTE_FAILED) {
                     return false;
                 }
             }
-            return true;
+            return true; 
         } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
-
-    public void close() {
+        public void close() {
         if (connection != null) {
             try {
                 connection.close();
             } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }
+
 
     public ArrayList<Plan> getAllPlans() {
         String sql = """

@@ -117,6 +117,23 @@
         background-color: #e74c3c;
         color: #fff;
     }
+                /* Home Button Styles - bên trái */
+            .home-button {
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: all 0.3s;
+                min-width: 100px; /* Đảm bảo nút có độ rộng nhất định */
+            }
+
+            .home-button:hover {
+                background-color: #45a049;
+                transform: translateY(-2px);
+            }
 </style>
 
 

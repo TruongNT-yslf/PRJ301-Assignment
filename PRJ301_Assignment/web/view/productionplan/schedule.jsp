@@ -50,21 +50,18 @@
                 color: #721c24;
                 border: 1px solid #f5c6cb;
             }
-            .home-button {
-                position: absolute; /* Positioning the button */
-                top: 20px; /* Distance from the top */
-                left: 20px; /* Distance from the left */
-                background-color: #007bff; /* Blue background */
-                color: white; /* White text */
-                border: none; /* No border */
-                padding: 10px 15px; /* Padding for the button */
-                font-size: 1em; /* Font size */
-                cursor: pointer; /* Pointer cursor on hover */
-                border-radius: 5px; /* Rounded corners */
-                transition: background-color 0.3s; /* Smooth transition for hover effect */
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #ffffff;
+                background-color: #007bff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-top: 20px;
             }
-            .home-button:hover {
-                background-color: #0056b3; /* Darker blue on hover */
+            button:hover {
+                background-color: #0056b3;
             }
             input[type="number"] {
                 width: 60px;
@@ -89,11 +86,29 @@
             .logout-link:hover {
                 background-color: #c82333;
             }
+                        /* Home Button Styles - bên trái */
+            .home-button {
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: all 0.3s;
+                min-width: 100px; /* Đảm bảo nút có độ rộng nhất định */
+            }
+
+            .home-button:hover {
+                background-color: #45a049;
+                transform: translateY(-2px);
+            }
         </style>
 
     </head>
     <body>
         <button class="home-button" onclick="window.location.href = '/assignment/home'">Home</button>
+
         <!-- Hiển thị thông báo cập nhật -->
         <c:choose>
             <c:when test="${param.updateSuccess == 'true'}">
@@ -103,6 +118,7 @@
                 <div class="message error">Update failed!</div>
             </c:when>
         </c:choose>
+
         <!-- Form cập nhật lịch sản xuất -->
         <form action="${pageContext.request.contextPath}/productionplan/schedule/update" method="POST">
             <table>
@@ -114,6 +130,7 @@
                         </c:forEach>
                     <th>Tổng Sản Phẩm Nhập</th> <!-- Cột mới -->
                 </tr>
+
                 <!-- Hàng thứ hai: các ca làm việc -->
                 <tr>
                     <td></td>
@@ -124,19 +141,22 @@
                         </c:forEach>
                     <td></td> <!-- Cột tổng sẽ để trống cho hàng này -->
                 </tr>
+
                 <!-- Dữ liệu sản phẩm và số lượng theo từng ca -->
                 <c:forEach var="product" items="${listProduct}">
                     <tr>
                         <td>${product.name}</td>
                         <c:set var="totalQuantity" value="0" scope="page" /> <!-- Khởi tạo biến tổng -->
+
                         <c:forEach var="date" items="${dateList}">
                             <c:forEach var="shift" begin="1" end="3">
                                 <td>
                                     <c:set var="campaignList" value="${map[product.id]}" />
                                     <c:forEach var="sc" items="${campaignList}">
                                         <c:if test="${sc.date.time == date.time && sc.shift == shift}">
-                                            <input type="number" name="quantity${product.id}${date.time}${shift}" value="${sc.quantity}" required>
-                                            <input type="hidden" name="scId${product.id}${date.time}${shift}" value="${sc.id}">
+                                            <input type="number" name="quantity_${product.id}_${date.time}_${shift}" value="${sc.quantity}" required>
+                                            <input type="hidden" name="scId_${product.id}_${date.time}_${shift}" value="${sc.id}">
+
                                             <!-- Cập nhật tổng số lượng -->
                                             <c:set var="totalQuantity" value="${totalQuantity + sc.quantity}" scope="page" />
                                         </c:if>
@@ -144,6 +164,7 @@
                                 </td>
                             </c:forEach>
                         </c:forEach>
+
                         <!-- Hiển thị tổng số lượng đã nhập -->
                         <td>${totalQuantity}</td>
                     </tr>
@@ -151,6 +172,7 @@
             </table>
             <button type="submit">Lưu thay đổi</button>
         </form>
+
         <!-- Hiển thị thông báo khác nếu có -->
         <c:if test="${not empty message}">
             <div class="message">${message}</div>

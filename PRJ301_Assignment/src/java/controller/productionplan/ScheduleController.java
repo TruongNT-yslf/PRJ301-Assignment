@@ -57,7 +57,7 @@ public class ScheduleController extends AccessControlController {
     protected void doAuthorizedGet(HttpServletRequest req, HttpServletResponse resp, User account) throws ServletException, IOException {
         PlanDBContext planDBContext = new PlanDBContext();
         ArrayList<Plan> plans = planDBContext.getAllPlans();
-        req.getSession().setAttribute("plans", plans);
+        req.setAttribute("plans", plans);
         req.getRequestDispatcher("../view/productionplan/schedule_input.jsp").forward(req, resp);
     }
 

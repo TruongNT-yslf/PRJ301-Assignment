@@ -18,7 +18,6 @@ import java.util.Map;
  * Servlet to handle updates to the schedule.
  */
 public class ScheduleUpdateController extends HttpServlet {
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -57,17 +56,23 @@ public class ScheduleUpdateController extends HttpServlet {
             }
         } catch (Exception e) {
         }
-        Plan plan = (Plan) request.getSession().getAttribute("plan");
+        // load lai du lieu 
+        // set attt
+        Plan plan = (Plan)request.getSession().getAttribute("plan");
+        System.err.println("adasdas"+ plan);
         PlanDBContext planDBContext = new PlanDBContext();
         List<Product> listProduct = planDBContext.getProductsByPlanId(plan.getId());
         Map<Integer, List<SchedualCampaign>> map = new HashMap();
+
 
         for (Product product : listProduct) {
             List<SchedualCampaign> lst = planDBContext.getSchedualCampaignsByPlanIdnProductId(plan.getId(), product.getId());
             map.put(product.getId(), lst);
         }
         request.getSession().setAttribute("map", map);
+        System.err.println("adasdas   sdsdsd" + listProduct);
         request.getSession().setAttribute("listProduct", listProduct);
+        
 
         if (updateSuccess) {
             //response.getWriter().println("Update Successfully!");
@@ -78,7 +83,7 @@ public class ScheduleUpdateController extends HttpServlet {
             request.getSession().setAttribute("message", "Update Fail!");
             request.getSession().setAttribute("updateSuccess", false);
         }
-        response.sendRedirect(request.getContextPath() + "/view/productionplan/schedule.jsp");
+         response.sendRedirect(request.getContextPath() + "/view/productionplan/schedule.jsp");
         //response.sendRedirect(request.getContextPath() + "/productionplan/schedule");
     }
 
