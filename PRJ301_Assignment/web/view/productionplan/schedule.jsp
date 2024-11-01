@@ -86,8 +86,7 @@
             .logout-link:hover {
                 background-color: #c82333;
             }
-                        /* Home Button Styles - bên trái */
-            .home-button {
+                        .home-button {
                 padding: 10px 20px;
                 background-color: #4CAF50;
                 color: white;
@@ -108,6 +107,7 @@
     </head>
     <body>
         <button class="home-button" onclick="window.location.href = '/assignment/home'">Home</button>
+
 
         <!-- Hiển thị thông báo cập nhật -->
         <c:choose>

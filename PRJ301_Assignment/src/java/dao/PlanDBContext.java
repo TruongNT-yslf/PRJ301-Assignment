@@ -4,6 +4,7 @@
  */
 package dao;
 
+
 import entity.Attendance;
 import entity.Plan;
 import entity.PlanCampaign;
@@ -432,16 +433,16 @@ public class PlanDBContext extends DBContext<Plan> {
             return false;
         }
     }
-        public void close() {
+
+
+    public void close() {
         if (connection != null) {
             try {
                 connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
     }
-
 
     public ArrayList<Plan> getAllPlans() {
         String sql = """
