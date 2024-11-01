@@ -4,7 +4,6 @@
  */
 package dao;
 
-
 import entity.Attendance;
 import entity.Plan;
 import entity.PlanCampaign;
@@ -420,20 +419,58 @@ public class PlanDBContext extends DBContext<Plan> {
                 stm.setInt(2, sc.getId());
                 stm.addBatch();
             }
-            int[] updateCounts = stm.executeBatch(); 
+            int[] updateCounts = stm.executeBatch();
 
             for (int count : updateCounts) {
                 if (count == PreparedStatement.EXECUTE_FAILED) {
                     return false;
                 }
             }
-            return true; 
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
+    public void insertSchedualCampaigns(List<SchedualCampaign> campaigns) {
+        String sql = "INSERT INTO SchedualCampaign (PlanCampaignID, Date, Shift, Quantity) VALUES (?, ?, ?, ?)";
+        try {
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement stm = connection.prepareStatement(sql)) {
+                for (SchedualCampaign campaign : campaigns) {
+                    stm.setInt(1, campaign.getPlanCampaign().getId());
+                    stm.setDate(2, campaign.getDate());
+                    stm.setInt(3, campaign.getShift());
+                    stm.setInt(4, campaign.getQuantity());
+                    stm.addBatch();
+                }
+
+                stm.executeBatch(); // Thực hiện batch insert
+                connection.commit();
+            } catch (SQLException ex) {
+                connection.rollback();
+                throw ex;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
 
     public void close() {
         if (connection != null) {
@@ -454,7 +491,7 @@ public class PlanDBContext extends DBContext<Plan> {
         try {
             stm = connection.prepareStatement(sql);
             ResultSet rs = stm.executeQuery();
-            while (rs.next()) {                
+            while (rs.next()) {
                 Plan plan = new Plan();
                 plan.setId(rs.getInt("PlanID"));
                 plan.setName(rs.getString("PlanName"));
