@@ -118,20 +118,19 @@
     </head>
     <body>
         <button class="home-button" onclick="window.location.href = '/assignment/home'">Home</button>
-
         <h2>Attendance History and Performance Analysis</h2>
-
         <form action="emphistory" method="post">
             <label for="employeeId">Select Employee ID:</label>
             <input type="number" name="employeeId" id="employeeId" value="${employeeId}" required>
             <button type="submit">View History</button>
         </form>
-
         <table>
             <thead>
                 <tr>
                     <th>Date</th>
                     <th>Shift</th>
+                    <th>Product ID</th>
+                    <th>Product Name</th>
                     <th>Planned Quantity</th>
                     <th>Completed Quantity</th>
                     <th>Status</th>
@@ -142,6 +141,8 @@
                     <tr>
                         <td>${se.schedualCampaign.date}</td>
                         <td>${se.schedualCampaign.shift}</td>
+                        <td>${se.schedualCampaign.planCampaign.product.id}</td>
+                        <td>${se.schedualCampaign.planCampaign.product.name}</td>
                         <td>${se.quantity}</td>
                         <td>${se.attendance.quantity}</td>
                         <td>

@@ -157,7 +157,7 @@ public class SchedualEmployeeDBContext extends DBContext<SchedualEmployee> {
         return schedualEmployees;
     }
 
-    public ArrayList<SchedualEmployee> getEmployeeAttendanceHistory(int employeeId) {
+    /*public ArrayList<SchedualEmployee> getEmployeeAttendanceHistory(int employeeId) {
         ArrayList<SchedualEmployee> attendanceHistory = new ArrayList<>();
         String sql = """
                 SELECT 
@@ -202,6 +202,85 @@ public class SchedualEmployeeDBContext extends DBContext<SchedualEmployee> {
                 se.setAttendance(attendance);
 
                 attendanceHistory.add(se);
+            }
+        } catch (SQLException e) {
+        }
+        return attendanceHistory;
+    }*/
+    public ArrayList<SchedualEmployee> getEmployeeAttendanceHistory(int employeeId) {
+        ArrayList<SchedualEmployee> attendanceHistory = new ArrayList<>();
+        String sql = """
+                SELECT 
+                    se.SchEmpID,
+                    sc.ScID,
+                    sc.Date,
+                    sc.Shift,
+                    sc.Quantity AS CampaignQuantity,
+                    se.Quantity AS PlannedQuantity,
+                    COALESCE(a.Quantity, 0) AS CompletedQuantity,
+                    COALESCE(a.Alpha, 0) AS Alpha,
+                    pc.PlanCampaignID,
+                    pc.Quantity AS PlanQuantity,
+                    p.ProductID,
+                    p.ProductName,
+                CASE 
+                    WHEN a.Alpha = 1 THEN 'Achieved the target'
+                    WHEN a.Alpha < 1 THEN 'Not achieved the target'  
+                    ELSE 'Exceeded the target' 
+                END AS TargetStatus
+                FROM 
+                    SchedualEmployee se
+                JOIN 
+                    SchedualCampaign sc ON se.ScID = sc.ScID
+                JOIN 
+                    PlanCampaign pc ON sc.PlanCampaignID = pc.PlanCampaignID
+                JOIN 
+                    Product p ON pc.ProductID = p.ProductID    
+                LEFT JOIN 
+                    Attendence a ON se.SchEmpID = a.SchEmpID
+                WHERE 
+                    se.EmployeeID = ?
+                ORDER BY 
+                    sc.Date DESC, sc.Shift ASC;
+                 """;
+        try (PreparedStatement stm = connection.prepareStatement(sql)) {
+            stm.setInt(1, employeeId);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                // Tạo Product
+                Product product = new Product();
+                product.setId(rs.getInt("ProductID"));
+                product.setName(rs.getString("ProductName"));
+
+                // Tạo PlanCampaign
+                PlanCampaign planCampaign = new PlanCampaign();
+                planCampaign.setId(rs.getInt("PlanCampaignID"));
+                planCampaign.setProduct(product);
+                planCampaign.setQuantity(rs.getInt("PlanQuantity"));
+
+                // Tạo SchedualCampaign
+                SchedualCampaign schedualCampaign = new SchedualCampaign();
+                schedualCampaign.setId(rs.getInt("ScID"));
+                schedualCampaign.setPlanCampaign(planCampaign);
+                schedualCampaign.setDate(rs.getDate("Date"));
+                schedualCampaign.setShift(rs.getInt("Shift"));
+                schedualCampaign.setQuantity(rs.getInt("CampaignQuantity"));
+
+                // Tạo Attendance nếu có
+                Attendance attendance = new Attendance();
+                attendance.setQuantity(rs.getDouble("CompletedQuantity"));
+                attendance.setAlpha(rs.getDouble("Alpha"));
+
+                // Tạo SchedualEmployee
+                SchedualEmployee schedualEmployee = new SchedualEmployee();
+                schedualEmployee.setId(rs.getInt("SchEmpID"));
+                schedualEmployee.setSchedualCampaign(schedualCampaign);
+                schedualEmployee.setQuantity(rs.getDouble("PlannedQuantity"));
+                schedualEmployee.setAttendance(attendance);
+                schedualEmployee.setStatus(rs.getString("TargetStatus"));
+
+                // Add vào list kết quả
+                attendanceHistory.add(schedualEmployee);
             }
         } catch (SQLException e) {
         }
