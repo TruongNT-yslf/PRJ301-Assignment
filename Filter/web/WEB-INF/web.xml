@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <servlet>
+        <servlet-name>StudentCreateController</servlet-name>
+        <servlet-class>controller.StudentCreateController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentUpdateController</servlet-name>
+        <servlet-class>controller.StudentUpdateController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentDeleteController</servlet-name>
+        <servlet-class>controller.StudentDeleteController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentCreateController</servlet-name>
+        <url-pattern>/student/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentUpdateController</servlet-name>
+        <url-pattern>/student/update</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentDeleteController</servlet-name>
+        <url-pattern>/student/delete</url-pattern>
+    </servlet-mapping>
+</web-app>
