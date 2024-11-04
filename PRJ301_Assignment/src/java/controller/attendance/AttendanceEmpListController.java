@@ -7,6 +7,7 @@ package controller.attendance;
 import controller.accesscontrol.AccessControlController;
 import dao.SchedualEmployeeDBContext;
 import dao.UserDBContext;
+import entity.Employee;
 import entity.SchedualEmployee;
 import entity.accesscontrol.Role;
 import entity.accesscontrol.User;
@@ -66,6 +67,8 @@ public class AttendanceEmpListController extends AccessControlController {
 
             SchedualEmployeeDBContext db = new SchedualEmployeeDBContext();
             ArrayList<SchedualEmployee> employeeAttendanceHistory = db.getEmployeeAttendanceHistory(employeeId);
+            Employee e = db.getEmployeeName(employeeId);
+            req.setAttribute("employeeName", e.getEmployeeName());
 
             req.setAttribute("attendanceHistory", employeeAttendanceHistory);
             req.setAttribute("employeeId", employeeId);

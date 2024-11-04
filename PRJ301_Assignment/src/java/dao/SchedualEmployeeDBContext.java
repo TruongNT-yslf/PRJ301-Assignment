@@ -235,7 +235,7 @@ public class SchedualEmployeeDBContext extends DBContext<SchedualEmployee> {
                 JOIN 
                     PlanCampaign pc ON sc.PlanCampaignID = pc.PlanCampaignID
                 JOIN 
-                    Product p ON pc.ProductID = p.ProductID    
+                    Product p ON pc.ProductID = p.ProductID   
                 LEFT JOIN 
                     Attendence a ON se.SchEmpID = a.SchEmpID
                 WHERE 
@@ -270,6 +270,7 @@ public class SchedualEmployeeDBContext extends DBContext<SchedualEmployee> {
                 Attendance attendance = new Attendance();
                 attendance.setQuantity(rs.getDouble("CompletedQuantity"));
                 attendance.setAlpha(rs.getDouble("Alpha"));
+               
 
                 // Tạo SchedualEmployee
                 SchedualEmployee schedualEmployee = new SchedualEmployee();
@@ -278,7 +279,6 @@ public class SchedualEmployeeDBContext extends DBContext<SchedualEmployee> {
                 schedualEmployee.setQuantity(rs.getDouble("PlannedQuantity"));
                 schedualEmployee.setAttendance(attendance);
                 schedualEmployee.setStatus(rs.getString("TargetStatus"));
-
                 // Add vào list kết quả
                 attendanceHistory.add(schedualEmployee);
             }
@@ -287,4 +287,52 @@ public class SchedualEmployeeDBContext extends DBContext<SchedualEmployee> {
         return attendanceHistory;
     }
 
+    public void updateAttendance(int schEmpId, double completedQuantity) {
+        PreparedStatement stm = null;
+        String sql = "UPDATE Attendence SET Quantity = ? WHERE SchEmpID = ?";
+        try {
+            stm = connection.prepareStatement(sql);
+            stm.setDouble(1, completedQuantity);
+            stm.setInt(2, schEmpId);
+            stm.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(SchedualEmployeeDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (stm != null) {
+                    stm.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(SchedualEmployeeDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    public Employee getEmployeeName(int employeeID){
+        String sql = """
+                     select DISTINCT e.EmployeeName
+                     from Employee e join SchedualEmployee se on e.EmployeeID = se.EmployeeID
+                     where se.EmployeeID = ?
+                     """;
+        PreparedStatement stm = null;
+        Employee e = new Employee();
+        try {
+            stm = connection.prepareStatement(sql);
+            stm.setInt(1, employeeID);
+            ResultSet rs = stm.executeQuery();
+            
+            if (rs.next()) {
+                
+                e.setId(employeeID);
+                e.setEmployeeName(rs.getString("EmployeeName"));
+             
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(SchedualEmployeeDBContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return  e;
+    }
 }

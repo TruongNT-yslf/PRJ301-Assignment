@@ -2,25 +2,29 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Attendance Information</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <style>
-            .table-hover tbody tr:hover {
-                background-color: #f5f5f5;
-            }
             .status-achieved {
                 color: green;
+                font-weight: bold;
             }
             .status-not-achieved {
-                color: orange;
+                color: red;
+                font-weight: bold;
             }
             .status-exceeded {
                 color: blue;
+                font-weight: bold;
             }
             .home-button {
+                position: relative; /* Positioning the button */
+                top: 20px; /* Distance from the top */
+                left: 20px; /* Distance from the left */
                 background-color: #007bff; /* Blue background */
                 color: white; /* White text */
                 border: none; /* No border */
@@ -47,10 +51,7 @@
                         <label class="form-label">Department</label>
                         <select name="departmentId" class="form-select">
                             <c:forEach items="${departments}" var="dept">
-                                <option value="${dept.id}" 
-                                        ${dept.id == selectedDepartmentId ? 'selected' : ''}>
-                                    ${dept.name}
-                                </option>
+                                <option value="${dept.id}" ${dept.id == selectedDepartmentId ? 'selected' : ''}>${dept.name}</option>
                             </c:forEach>
                         </select>
                     </div>
@@ -59,8 +60,7 @@
                         <label class="form-label">Date</label>
                         <select name="date" class="form-select">
                             <c:forEach items="${dates}" var="availableDate">
-                                <option value="${availableDate}" 
-                                        ${availableDate == selectedDate ? 'selected' : ''}>
+                                <option value="${availableDate}" ${availableDate == selectedDate ? 'selected' : ''}>
                                     <fmt:formatDate value="${availableDate}" pattern="yyyy-MM-dd"/>
                                 </option>
                             </c:forEach>
@@ -89,59 +89,44 @@
                 </div>
             </c:if>
 
-            <!-- Attendance Information Table -->
-            <c:choose>
-                <c:when test="${not empty attendanceInfo}">
-                    <%-- Calculate statistics --%>
-                    <c:set var="achievedCount" value="0"/>
-                    <c:set var="notAchievedCount" value="0"/>
-                    <c:set var="exceededCount" value="0"/>
-
-                    <c:forEach items="${attendanceInfo}" var="info">
-                        <c:choose>
-                            <c:when test="${info.status == 'Achieved the target'}">
-                                <c:set var="achievedCount" value="${achievedCount + 1}"/>
-                            </c:when>
-                            <c:when test="${info.status == 'Not achieved the target'}">
-                                <c:set var="notAchievedCount" value="${notAchievedCount + 1}"/>
-                            </c:when>
-                            <c:otherwise>
-                                <c:set var="exceededCount" value="${exceededCount + 1}"/>
-                            </c:otherwise>
-                        </c:choose>
-                    </c:forEach>
-
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Employee ID</th>
-                                    <th>Employee Name</th>
-                                    <th>Department</th>
-                                    <th>Product ID</th>
-                                    <th>Product Name</th>
-                                    <th>Planned Quantity</th>
-                                    <th>Completed Quantity</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach items="${attendanceInfo}" var="info">
+            <!-- Form Save bao quanh toàn bộ bảng -->
+            <form action="${pageContext.request.contextPath}/attendance/save" method="post">
+                <c:choose>
+                    <c:when test="${not empty attendanceInfo}">
+                        <!-- Table containing attendance info -->
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
                                     <tr>
-                                        <td>${info.employee.id}</td>
-                                        <td>${info.employee.employeeName}</td>
-                                        <td>${info.employee.department.name}</td>
-                                        <td>${info.schedualCampaign.planCampaign.product.id}</td>
-                                        <td>${info.schedualCampaign.planCampaign.product.name}</td>
-                                        <td>${info.quantity}</td>
-                                        <td>${info.attendance.quantity}</td>
-                                        <td>
-                                            <span class="
-                                                  ${info.status == 'Achieved the target' ? 'status-achieved' : 
-                                                    info.status == 'Not achieved the target' ? 'status-not-achieved' : 
-                                                    'status-exceeded'}">
-                                                      ${info.status}
-                                                  </span>
+                                        <th>Employee ID</th>
+                                        <th>Employee Name</th>
+                                        <th>Department</th>
+                                        <th>Product ID</th>
+                                        <th>Product Name</th>
+                                        <th>Planned Quantity</th>
+                                        <th>Completed Quantity</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${attendanceInfo}" var="info">
+                                        <tr>
+                                            <td>${info.employee.id}</td>
+                                            <td>${info.employee.employeeName}</td>
+                                            <td>${info.employee.department.name}</td>
+                                            <td>${info.schedualCampaign.planCampaign.product.id}</td>
+                                            <td>${info.schedualCampaign.planCampaign.product.name}</td>
+                                            <td>${info.quantity}</td>
+                                            <td>
+                                                <!-- Hidden field for schEmpId -->
+                                                <input type="hidden" name="schEmpId" value="${info.id}" />
+                                                <!-- Input for completedQuantity -->
+                                                <input type="number" name="completedQuantity" value="${info.attendance.quantity}" min="0" class="form-control" />
+                                            </td>
+                                            <td>
+                                                <span class="${info.status == 'Achieved the target' ? 'status-achieved' : info.status == 'Not achieved the target' ? 'status-not-achieved' : 'status-exceeded'}">
+                                                    ${info.status}
+                                                </span>
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -180,8 +165,13 @@
                         </div>
                     </c:otherwise>
                 </c:choose>
-            </div>
 
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        </body>
-    </html>
+                <!-- Save button outside of the table -->
+                <button type="submit" class="btn btn-primary mt-3">Save</button>
+            </form>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
+

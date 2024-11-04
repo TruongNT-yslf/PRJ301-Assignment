@@ -123,6 +123,7 @@
             <label for="employeeId">Select Employee ID:</label>
             <input type="number" name="employeeId" id="employeeId" value="${employeeId}" required>
             <button type="submit">View History</button>
+             <h2>Attendance History for Employee: ${employeeName}</h2> 
         </form>
         <table>
             <thead>

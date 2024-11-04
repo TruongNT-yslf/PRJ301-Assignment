@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +25,7 @@ import java.util.logging.Logger;
  */
 public class PlanDBContext extends DBContext<Plan> {
 
-    @Override
+    /* @Override
     public void insert(Plan entity) {
         try {
             connection.setAutoCommit(false);
@@ -71,6 +72,90 @@ public class PlanDBContext extends DBContext<Plan> {
                 stm_insert_campain.setInt(3, campain.getQuantity());
                 stm_insert_campain.setFloat(4, campain.getCost());
                 stm_insert_campain.executeUpdate();
+            }
+
+            connection.commit();
+        } catch (SQLException ex) {
+            Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            try {
+                connection.rollback();
+            } catch (SQLException ex1) {
+                Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(PlanDBContext.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }*/
+    @Override
+    public void insert(Plan entity) {
+        try {
+            connection.setAutoCommit(false);
+            // Chèn thông tin vào bảng Plan
+            String sql_insert_plan = "INSERT INTO [Plan] "
+                    + "([PlanName], [StartDate], [EndDate], [DepartmentID]) "
+                    + "VALUES (?, ?, ?, ?)";
+            PreparedStatement stm_insert_plan = connection.prepareStatement(sql_insert_plan);
+            stm_insert_plan.setString(1, entity.getName());
+            stm_insert_plan.setDate(2, entity.getStart());
+            stm_insert_plan.setDate(3, entity.getEnd());
+            stm_insert_plan.setInt(4, entity.getDept().getId());
+            stm_insert_plan.executeUpdate();
+
+            // Lấy ID của Plan mới chèn
+            String sql_select_plan = "SELECT @@IDENTITY as PlanID";
+            PreparedStatement stm_select_plan = connection.prepareStatement(sql_select_plan);
+            ResultSet rs = stm_select_plan.executeQuery();
+            if (rs.next()) {
+                entity.setId(rs.getInt("PlanID"));
+            }
+
+            // Chèn thông tin vào bảng PlanCampaign và SchedualCampaign
+            for (PlanCampaign campaign : entity.getCampaigns()) {
+                String sql_insert_campaign = "INSERT INTO [PlanCampaign] "
+                        + "([PlanID], [ProductID], [Quantity], [Estimate]) "
+                        + "VALUES (?, ?, ?, ?)";
+                PreparedStatement stm_insert_campaign = connection.prepareStatement(sql_insert_campaign);
+                stm_insert_campaign.setInt(1, entity.getId());
+                stm_insert_campaign.setInt(2, campaign.getProduct().getId());
+                stm_insert_campaign.setInt(3, campaign.getQuantity());
+                stm_insert_campaign.setFloat(4, campaign.getCost());
+                stm_insert_campaign.executeUpdate();
+
+                // Lấy ID của PlanCampaign mới chèn
+                String sql_select_campaign = "SELECT @@IDENTITY as CampaignID";
+                PreparedStatement stm_select_campaign = connection.prepareStatement(sql_select_campaign);
+                ResultSet rsCampaign = stm_select_campaign.executeQuery();
+                if (rsCampaign.next()) {
+                    campaign.setId(rsCampaign.getInt("CampaignID"));
+                }
+
+                // Chèn thông tin vào SchedualCampaign với số lượng bằng 0
+                String sql_insert_schedule = "INSERT INTO [SchedualCampaign] "
+                        + "([PlanCampaignID], [Date], [Shift], [Quantity]) "
+                        + "VALUES (?, ?, ?, 0)";
+                PreparedStatement stm_insert_schedule = connection.prepareStatement(sql_insert_schedule);
+                stm_insert_schedule.setInt(1, campaign.getId());
+                // Bạn có thể cần điều chỉnh việc chèn ngày và ca làm việc dựa trên yêu cầu cụ thể của bạn
+                // Ví dụ, lặp qua các ngày và ca làm việc
+                // Lặp qua các ngày và ca làm việc để chèn
+                for (java.util.Date date = entity.getStart(); !date.after(entity.getEnd()); date = new java.util.Date(date.getTime() + 86400000L)) {
+                    for (int shift = 1; shift <= 3; shift++) {
+                        // Chuyển đổi java.util.Date sang java.sql.Date
+                        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+                        stm_insert_schedule.setDate(2, sqlDate);
+                        stm_insert_schedule.setInt(3, shift);
+                        stm_insert_schedule.executeUpdate();
+                    }
+                }
             }
 
             connection.commit();
