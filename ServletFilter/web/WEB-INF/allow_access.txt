@@ -1,2 +1,0 @@
-/student/create
-/student/update
